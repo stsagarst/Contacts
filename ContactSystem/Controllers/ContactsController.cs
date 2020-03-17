@@ -1,4 +1,6 @@
-﻿using ContactSystem.Models;
+﻿using ContactSystem.Contracts;
+using ContactSystem.Implementation;
+using ContactSystem.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,108 +12,49 @@ namespace ContactSystem.Controllers
 {
     public class ContactsController : Controller
     {
-        HttpClient client = new HttpClient();
+        private readonly IContactsRepository _icontactsRepository;
+        
+        public ContactsController(IContactsRepository icontactsRepository)
+        {
+            _icontactsRepository = icontactsRepository;
+        }
         public ContactsController()
         {
-           
-            client.BaseAddress = new Uri("http://localhost:49199/api/");
+            _icontactsRepository = new ContactRepository(new ContactInfoEntities());
+            
         }
         public ActionResult ShowContacts()
         {
-            IEnumerable<Contact> contact = null;
-            
-            var postTask = client.GetAsync("ContactData");
-            postTask.Wait();
-
-            var result = postTask.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                var readTask = result.Content.ReadAsAsync<IList<Contact>>();
-                readTask.Wait();
-                contact = readTask.Result;
-
-            }
-            else //web api sent error response 
-            {
-                contact = Enumerable.Empty<Contact>();
-
-                ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-            }
+            IEnumerable<Contact> contact = _icontactsRepository.GetContact();
             return View(contact);
             
         }
         public ActionResult CreateContact()
-       {
+        {
             return View();
         }
         [HttpPost]
         public ActionResult CreateContact(Contact contact)
         {
-           
-            //HTTP POST
-            var postTask = client.PostAsJsonAsync<Contact>("ContactData", contact);
-            postTask.Wait();
-
-            var result = postTask.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                return RedirectToAction("ShowContacts");
-            }
-
-            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-
-            return View("ShowContacts");
+            _icontactsRepository.NewContact(contact);
+            return RedirectToAction("ShowContacts");
         }
         [HttpGet]
         public ActionResult EditContacts(int Id)
         {
-            Contact EditedContact = null;
-           
-            //HTTP POST
-            var postTask = client.GetAsync("ContactData?ID=" + Id);
-            postTask.Wait();
-
-            var result = postTask.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                var readTask = result.Content.ReadAsAsync<Contact>();
-                readTask.Wait();
-                EditedContact = readTask.Result;
-
-            }
+            Contact EditedContact = _icontactsRepository.GetContactById(Id);
             return View(EditedContact);
             
         }
         
         public ActionResult EditContacts(Contact contact)
         {
-          
-            //HTTP POST
-            var postTask = client.PutAsJsonAsync<Contact>("ContactData", contact);
-            postTask.Wait();
-
-            var result = postTask.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                return RedirectToAction("ShowContacts");
-            }
-           
-            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-
-            return View("ShowContacts");
+            _icontactsRepository.UpdateContact(contact);
+            return RedirectToAction("ShowContacts");
         }
         public ActionResult DeleteContact(int Id)
         {
-            //HTTP DELETE
-            var deleteTask = client.DeleteAsync("ContactData?Id=" + Id);
-            deleteTask.Wait();
-
-            var result = deleteTask.Result;
-            if (result.IsSuccessStatusCode)
-            {
-
-                return RedirectToAction("ShowContacts");
-            }
+            _icontactsRepository.DeleteContact(Id);
             return RedirectToAction("ShowContacts");
         }
     }

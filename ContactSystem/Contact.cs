@@ -11,14 +11,31 @@ namespace ContactSystem
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class Contact
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Enter first name")]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Enter lst name")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
+
+        [Required(ErrorMessage = "Enter phone number")]
+        [Display(Name = "Phone Number")]
         public long PhoneNo { get; set; }
+
+        [Required(ErrorMessage = "Enter valid email address")]
+        [EmailAddress]
         public string Email { get; set; }
+
+
+        [Required(ErrorMessage = "Enter Status")]
+        [Display(Name = "Status")]
         public string Status { get; set; }
     }
 }

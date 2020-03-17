@@ -224,6 +224,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ContactModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Contracts\IContactsRepository.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ContactDataController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Implementation\ContactRepository.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ContactModel.cs" />

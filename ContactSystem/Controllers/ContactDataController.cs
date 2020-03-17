@@ -33,13 +33,20 @@ namespace ContactSystem.Controllers
         [HttpPost]
         public IHttpActionResult Post(Contact contact)
         {
-            using (ContactInfoEntities entities = new ContactInfoEntities())
+            if (ModelState.IsValid)
             {
-                entities.Contacts.Add(contact);
-                entities.SaveChanges();
+                using (ContactInfoEntities entities = new ContactInfoEntities())
+                {
+                    entities.Contacts.Add(contact);
+                    entities.SaveChanges();
+                }
+                return Ok(contact);
             }
-
-            return Ok(contact);
+            else
+            {
+                return NotFound();
+            }
+            
         }
 
         [HttpPut]
